@@ -24,13 +24,15 @@ ANONYMOUS U7P4L
  pip install mechanize
  cd $HOME 
  rm -rf KaliLinux-Nethunter
- git clone --depth=1 https://github.com/ANONYMOUS-U7P4L/KaliLinux-Nethunter.git
+ git clone --depth=1 https://github.com/U7P4L-IN/KaliLinux-Nethunter.git
 
  cd KaliLinux-Nethunter
 
  bash install.sh
 ```
+#### Screenshots:
 
+<p align="center"><img src="https://github.com/U7P4L-IN/KaliLinux-Nethunter/blob/main/FB_IMG_16764609647947933.jpg">
 
 #### Tools Languages :
 
