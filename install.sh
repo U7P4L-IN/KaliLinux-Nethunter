@@ -1,16 +1,10 @@
 #!/data/data/com.termux/files/usr/bin/bash -e
 
-#--------------------INFO-------------------#
-#CODING U7P4L 
-#FACEBOOK > ANONYMOUS U7P4L 
-#GITHUB > ANONYMOUS-U7P4L 
-#-------------MAIN>MENU-------------#
-## This script will installed kali-nethuntern in termux without any error
-## If you like my work please subscribe us on youtube.
-
 VERSION=2020011601
-BASE_URL=https://images.kali.org/nethunter
+BASE_URL=https://kali.download/nethunter-images/current/rootfs
 USERNAME=kali
+
+
 
 function unsupported_arch() {
     printf "${red}"
@@ -69,9 +63,50 @@ function get_arch() {
 }
 
 function set_strings() {
+    echo \
+    && echo "" 
+    ####
+    if [[ ${SYS_ARCH} == "arm64" ]];
+    then
+        echo "[1] NetHunter ARM64 (full)"
+        echo "[2] NetHunter ARM64 (minimal)"
+        echo "[3] NetHunter ARM64 (nano)"
+        read -p "Enter the image you want to install: " wimg
+        if (( $wimg == "1" ));
+        then
+            wimg="full"
+        elif (( $wimg == "2" ));
+        then
+            wimg="minimal"
+        elif (( $wimg == "3" ));
+        then
+            wimg="nano"
+        else
+            wimg="full"
+        fi
+    elif [[ ${SYS_ARCH} == "armhf" ]];
+    then
+        echo "[1] NetHunter ARMhf (minimal)"
+        echo "[2] NetHunter ARMhf (nano)"
+        read -p "Enter the image you want to install: " wimg
+        if (( $wimg == "1" ));
+        then
+            wimg="minimal"
+        elif (( $wimg == "2" ));
+        then
+            wimg="nano"
+        else
+            wimg="minimal"
+        fi
+        else
+        wimg="full"
+    fi
+    ####
+
+
     CHROOT=kali-${SYS_ARCH}
-    IMAGE_NAME=kalifs-${SYS_ARCH}-full.tar.xz
-    SHA_NAME=kalifs-${SYS_ARCH}-full.sha512sum
+    IMAGE_NAME=kalifs-${SYS_ARCH}-${wimg}.tar.xz
+    SHA_NAME=kalifs-${SYS_ARCH}-${wimg}.sha512sum
 }    
 
 function prepare_fs() {
@@ -104,19 +139,18 @@ function check_dependencies() {
     ##apt update -y &> /dev/null
     apt-get update -y &> /dev/null || apt-get -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" dist-upgrade -y &> /dev/null
 
-    for i in proot tar python; do
+    for i in proot tar axel; do
         if [ -e $PREFIX/bin/$i ]; then
             echo "  $i is OK"
         else
-            printf "Installing ${i}...\n"	    
+            printf "Installing ${i}...\n"
             apt install -y $i || {
-                printf "${red}ERROR: Failed to install packages.\n Exiting.\n${reset}"		
+                printf "${red}ERROR: Failed to install packages.\n Exiting.\n${reset}"
 	        exit
             }
         fi
     done
     apt upgrade -y
-    pip install gdown
 }
 
 
@@ -137,33 +171,18 @@ function get_rootfs() {
         fi
     fi
     printf "${blue}[*] Downloading rootfs...${reset}\n\n"
-    if [ "${SYS_ARCH}" != "arm64" ];then
-		# ROOTFS ARMHF
-		gdown https://drive.google.com/uc?id=1cWCuxhTotNMMdLZpB5G7cednhRz2hWeY
-	else
-		# ROOTFS ARM64
-		gdown https://drive.google.com/uc?id=1DbP2LCZGWAH-A9IUHxXZqxoT9Sx8fGFb
-	fi
-    #get_url
-    #axel ${EXTRA_ARGS} --alternate "$ROOTFS_URL"    
+    get_url
+    wget ${EXTRA_ARGS} --continue "${ROOTFS_URL}"
 }
 
 function get_sha() {
     if [ -z $KEEP_IMAGE ]; then
         printf "\n${blue}[*] Getting SHA ... ${reset}\n\n"
-	if [ "${SYS_ARCH}" != "arm64" ];then
-		# SHA 512 SUM ARMHF
-		gdown https://drive.google.com/uc?id=1AF-29oLlrdDNMFotmzk0oi5QWTHI8aFJ
-	else
-		# SHA 512 SUM ARM64
-		gdown https://drive.google.com/uc?id=1ORCr_kzE-d3vCj--FZVjK66I5Y7_EivH
-	fi
-        #get_url
+        get_url
         if [ -f ${SHA_NAME} ]; then
-            #rm -f ${SHA_NAME}
-	    image=ok
+            rm -f ${SHA_NAME}
         fi
-        #axel ${EXTRA_ARGS} --alternate "${SHA_URL}"
+        wget ${EXTRA_ARGS} --continue "${SHA_URL}"
     fi
 }
 
@@ -367,8 +386,7 @@ function print_banner() {
     printf "${blue}##  88P   Y8b      d8''''''''8b   88        88  ##\n"
     printf "${blue}##  88     '88.   d8'        '8b  88        88  ##\n"
     printf "${blue}##  88       Y8b d8'          '8b 888888888 88  ##\n"
-    printf "${blue}##                                              ##\n"  
-    printf "${yellow}##            Re-developed by ANONYMOUS U7P4L ##\n"
+    printf "${blue}##                                              ##\n"
     printf "${blue}####  ############# NetHunter ####################${reset}\n\n"
 }
 
@@ -387,7 +405,7 @@ reset='\033[0m'
 EXTRA_ARGS=""
 if [[ ! -z $1 ]]; then
     EXTRA_ARGS=$1
-    if [[ $EXTRA_ARGS != "--insecure" ]]; then
+    if [[ $EXTRA_ARGS != "--no-check-certificate" ]]; then
         EXTRA_ARGS=""
     fi
 fi
@@ -412,11 +430,17 @@ create_kex_launcher
 fix_uid
 
 print_banner
-printf "${green}[=] NetHunter for Termux installed successfully${reset}\n\n"
-printf "${green}[+] To start NetHunter, type:${reset}\n"
-printf "${green}[+] nethunter             # To start NetHunter cli${reset}\n"
+printf "${green}[=] Kali NetHunter for Termux installed successfully${reset}\n\n"
+printf "${green}[+] To start Kali NetHunter, type:${reset}\n"
+printf "${green}[+] nethunter             # To start NetHunter CLI${reset}\n"
 printf "${green}[+] nethunter kex passwd  # To set the KeX password${reset}\n"
-printf "${green}[+] nethunter kex &       # To start NetHunter gui${reset}\n"
-printf "${green}[+] nethunter kex stop    # To stop NetHunter gui${reset}\n"
+printf "${green}[+] nethunter kex &       # To start NetHunter GUI${reset}\n"
+printf "${green}[+] nethunter kex stop    # To stop NetHunter GUI${reset}\n"
+#printf "${green}[+] nethunter kex <command> # Run command in NetHunter env${reset}\n"
 printf "${green}[+] nethunter -r          # To run NetHunter as root${reset}\n"
+#printf "${green}[+] nethunter -r kex passwd  # To set the KeX password for root${reset}\n"
+#printf "${green}[+] nethunter kex &       # To start NetHunter GUI as root${reset}\n"
+#printf "${green}[+] nethunter kex stop    # To stop NetHunter GUI root session${reset}\n"
+#printf "${green}[+] nethunter -r kex kill # To stop all NetHunter GUI sessions${reset}\n"
+#printf "${green}[+] nethunter -r kex <command> # Run command in NetHunter env as root${reset}\n"
 printf "${green}[+] nh                    # Shortcut for nethunter${reset}\n\n"
