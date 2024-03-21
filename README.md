@@ -12,6 +12,10 @@
       <img alt="testandlint" src="https://img.shields.io/github/actions/workflow/status/vn7n24fzkq/github-profile-summary-cards/test-and-lint.yml?branch=main&label=Test%20and%20Lint&style=for-the-badge&color=a6da95"></a>
    </p>
 
+<h5 align="left"><b>LANGUAGE > </b></h5>
+
+ <p align="center"><img src="https://img.shields.io/badge/shell_script-%23121011.svg?style=for-the-badge&logo=gnu-bash&logoColor=white"/>
+
 > [What is Kali Nethunter ? ]  
 
 > Kali Nethunter is a Android ROM which is designed for Penetration Testing with Android Devices, Firstly Nethunter is Available for Nexus And Oneplus Devices,
